@@ -148,8 +148,8 @@ if __name__ == "__main__":
     threads = []
     threadList = []
     threadNum = 1
-    for i in range (0,3):
-    #for i in range(0,len(TBeginList)):
+    #for i in range (0,3):
+    for i in range(0,len(TBeginList)):
         threadList.append("Thread" + str(threadNum))
         threadNum += 1
 
@@ -160,8 +160,8 @@ if __name__ == "__main__":
     print workQueue
     queueLock.acquire()
 
-    for walkNo in range(0,3):
-    #for walkNo in range(0,len(TBeginList)):
+    #for walkNo in range(0,3):
+    for walkNo in range(0,len(TBeginList)):
         workQueue.put(walkNo)
     print(workQueue)
     queueLock.release()
