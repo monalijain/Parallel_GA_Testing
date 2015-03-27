@@ -17,6 +17,7 @@ db_username = 'root'
 db_password = 'mj031992'
 db_host = '127.0.0.1'
 db_port = '3306'
+priceSeriesTable="price_series_table" #Name of the price series table in the database
 
 #The columns in tradsheet table are:
 #TradeID, IndividualID, TradeType, EntryDate, EntryTime, EntryPrice, EntryQty, ExitDate, ExitTime, ExitPrice
