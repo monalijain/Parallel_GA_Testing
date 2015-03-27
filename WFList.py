@@ -1,23 +1,24 @@
 __author__ = 'MJ'
 #Function which gives walkforward list, given the price series data; Number of Days in Training Data; Number of Days in Reporting Date
 import GlobalVariables as gv
-import csv
-from datetime import date
 from DB_DBUtils import *
+
+import datetime
 
 def CreateWFList(SamplePriceSeries,T,R):
     dbObject4 = DBUtils()
     dbObject4.dbConnect()
-    query= "SELECT *, 1 FROM " + gv.priceSeriesTable +"'"
+    query= "SELECT *, 1 FROM " + gv.priceSeriesTable
     print "Executing Query",query
     resultDates = dbObject4.dbQuery(query)
-    
+
     c=0
     Tcounter=0
     TrainingBegin=list()
     TrainingEnd=list()
 
     for date,time,price,count in resultDates:
+        date=datetime.datetime.strptime(str(date), '%Y-%m-%d').strftime('%Y%m%d')
         if(c==0):
             TrainingBegin.append(str(date))
             Tcounter+=1
@@ -35,7 +36,7 @@ def CreateWFList(SamplePriceSeries,T,R):
         c=c+1
         date1=date
 
-    query= "SELECT *, 1 FROM " + gv.priceSeriesTable +"'"
+    query= "SELECT *, 1 FROM " + gv.priceSeriesTable
     print "Executing Query",query
     resultDates = dbObject4.dbQuery(query)
 
@@ -45,6 +46,7 @@ def CreateWFList(SamplePriceSeries,T,R):
     c=0
     Rcount=0
     for date,time,price,count in resultDates:
+        date=datetime.datetime.strptime(str(date), '%Y-%m-%d').strftime('%Y%m%d')
         if(c!=0):
             if(date1!=date):
                 try:
@@ -80,5 +82,3 @@ def CreateWFList(SamplePriceSeries,T,R):
     return (TrainingBegin,TrainingEnd,ReportingBegin,ReportingEnd)
 
 #[a,b,c,d]=CreateWFList("PriceSeries", 20, 10)
-#print a
-#print b
