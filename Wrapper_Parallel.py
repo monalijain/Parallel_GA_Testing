@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 import Queue
 import csv
 from DB_DBUtils import *
-
+import logging
 exitFlag = 0
 
 from WFList import CreateWFList
@@ -23,9 +23,9 @@ class ParallelWrapper(threading.Thread):
         self.q = q
 
     def run(self):
-        print("Starting : " + str(self.threadName))
+        logging.info("Starting : %s ",str(self.threadName))
         processIndividual(self.q)
-        print("Exiting : " + str(self.threadName))
+        logging.info("Exiting : %s ", str(self.threadName))
 
 def processIndividual(q):
     if not exitFlag:
@@ -35,16 +35,16 @@ def processIndividual(q):
             walkNo = data
             dbObject = DBUtils()
             dbObject.dbConnect()
-            print "Making MYFILE CSV and NetPL Ratio csv for walkforward ", walkNo+1
-            walkforward_number=walkNo+1
+            logging.info("Making MYFILE CSV and NetPL Ratio csv for walkforward %s", walkNo+1)
+            
+			walkforward_number=walkNo+1
             stringMyFile="MYFILE"+str(walkforward_number)+ "_" + "stock"+ str(gv.stock_number)+".csv"
             stringNetPLRatio="NetPLRatio"+str(walkforward_number)+ "_" + "stock"+ str(gv.stock_number)+".csv"
             c=csv.writer(open(stringMyFile,"wb"))
             PLRatio=csv.writer(open(stringNetPLRatio,"wb"))
 
-
             string_1= "CREATE TABLE performance_measures_"+"Training"+"_walk" + str(walkforward_number)+ "_" + "stock"+ str(gv.stock_number)
-            print "Executing Query ",string_1
+            logging.info("Executing Query %s",string_1)
             dbObject.dbQuery(" " + string_1 + " "
                              "("
                              "individual_id int,"
@@ -58,7 +58,7 @@ def processIndividual(q):
                              ")")
 
             string_1= "CREATE TABLE performance_measures_"+"Reporting"+"_walk" + str(walkforward_number)+ "_" + "stock"+ str(gv.stock_number)
-            print "Executing Query ",string_1
+            logging.info("Executing Query %s",string_1)
             dbObject.dbQuery(" " + string_1 + " "
                              "("
                              "individual_id int,"
@@ -71,13 +71,13 @@ def processIndividual(q):
                              "profit_epochs float"
                              ")")
 
-            print "Calculating Performance Measures of Training Period for walkforward ",walkforward_number
+            logging.info("Calculating Performance Measures of Training Period for walkforward %s",walkforward_number)
             Make_Performance_Measures(TBeginList[walkNo],TendList[walkNo],Train_Or_Report="Training",walkforward_number=walkforward_number)
             Make_Performance_Measures(RBeginList[walkNo],REndList[walkNo],Train_Or_Report="Reporting",walkforward_number=walkforward_number)
 
             c.writerow(["Walkforward",walkforward_number,TBeginList[walkNo],TendList[walkNo],RBeginList[walkNo],REndList[walkNo]])
 
-            print "Calling NonSorted Genetic Algorithm for walkforward ",walkNo+1
+            logging.info("Calling NonSorted Genetic Algorithm for walkforward %s",walkNo+1)
             [A,C,StoreParetoID]=NonSortedGA(walkforward_number,gv.MaxIndividualsInGen,MaxGen,MaxIndividuals)
             #[A,B,C]=NonSortedGA("Tradesheets","PriceSeries",6,'20120622','20121109','20121112','20130111',0.0,2,12)
             c.writerow(["IndividualID","TrainingPeriod"])
@@ -104,15 +104,16 @@ def processIndividual(q):
 
 if __name__ == "__main__":
 #making a database object
+	logging.basicConfig(filename='out.log',level=logging.DEBUG)
     dbObject1 = DBUtils()
     dbObject1.dbConnect()
-    print("Calculating number of individuals in database")
+    logging.info("Calculating number of individuals in database")
     #Calculates number of individuals in tradesheet table
     Number=dbObject1.dbQuery("SELECT COUNT(DISTINCT(individualid)),1 FROM "+gv.name_Tradesheet_Table)
 
     for num1,num2 in Number:
         MaxIndividuals=num1
-        print( "Number Of individuals in database: ",MaxIndividuals )
+        logging.info( "Number Of individuals in database: %s",MaxIndividuals)
 
     MaxGen=MaxIndividuals/gv.MaxIndividualsInGen
     
@@ -135,10 +136,10 @@ if __name__ == "__main__":
     '''
     dbObject1.dbClose()
     
-    #Creates Walkforward List
+    logging.info("Creates Walkforward List %s",str(datetime.now()))
     [TBeginList,TendList,RBeginList,REndList]=CreateWFList(gv.priceSeriesTable, gv.numDaysInTraining, gv.numDaysInReporting) #Creates Walkforward List
     #[TBeginList,TendList,RBeginList,REndList]=[["20120622","20120625"],["20120623","20120626"],["20120625","20120627"],["20130626","20120629"]]
-
+	
     '''
     #Calculates number of rows in tradesheet table
     Number=dbObject1.dbQuery("SELECT COUNT(*),1 FROM "+gv.name_Tradesheet_Table)
@@ -156,7 +157,8 @@ if __name__ == "__main__":
     for i in range(0,len(TBeginList)):
         threadList.append("Thread" + str(threadNum))
         threadNum += 1
-
+	
+	logging.info("threadList %s",threadList)
     print threadList,"threadList"
     queueLock = threading.Lock()
     print queueLock,"queueLock"
@@ -183,5 +185,5 @@ if __name__ == "__main__":
         t.join()
 
 
-    print('Finished at : ' + str(datetime.now()))
+    logging.info('Finished at : %s',str(datetime.now()))
 
