@@ -104,7 +104,7 @@ def processIndividual(q):
 
 if __name__ == "__main__":
 #making a database object
-	logging.basicConfig(filename='out.log',level=logging.DEBUG)
+    logging.basicConfig(filename='out.log',level=logging.DEBUG)
     dbObject1 = DBUtils()
     dbObject1.dbConnect()
     logging.info("Calculating number of individuals in database")
