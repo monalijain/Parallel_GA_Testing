@@ -2,7 +2,7 @@ import datetime
 import csv
 import GlobalVariables as gv
 from DB_DBUtils import *
-
+import logging
 def Make_Performance_Measures(Begin,End,Train_Or_Report,walkforward_number):
     dbObject1 = DBUtils()
     dbObject1.dbConnect()
@@ -29,7 +29,7 @@ def Make_Performance_Measures(Begin,End,Train_Or_Report,walkforward_number):
     #print EndDate.date()
 
     query= "SELECT *, 1 FROM " + gv.name_Tradesheet_Table + " WHERE entrydate >= '"+str(BeginDate.date()) + "' AND entrydate <= '"+str(EndDate.date())+"'"
-    print "Executing Query",query
+    logging.info("Executing Query %s",query)
     resultIndividuals = dbObject1.dbQuery(query)
 
     c=0
@@ -65,7 +65,7 @@ def Make_Performance_Measures(Begin,End,Train_Or_Report,walkforward_number):
 # dateinrange=CurrentDate.date()<=EndDate.date() and CurrentDate.date()>=BeginDate.date()
 
         if(c==0):
-            print "Start of calculation of performance measures:"
+            logging.info("Start of calculation of performance measures:")
             prev_trade_entry_date=trade_entry_date
            # CurrentDate= datetime.datetime.strptime(str(prev_trade_entry_date),"%Y-%m-%d")
             #print CurrentDate, individual_id
@@ -244,7 +244,7 @@ def Make_Performance_Measures(Begin,End,Train_Or_Report,walkforward_number):
 
 
 
-    print "End of Calculation of Performance Measures"
+    logging.info("End of Calculation of Performance Measures")
     dbObject1.dbClose()
 
 #Make_Performance_Measures('20120622','20120628',"Training",1)
