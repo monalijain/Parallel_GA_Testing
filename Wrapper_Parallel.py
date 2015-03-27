@@ -115,7 +115,9 @@ if __name__ == "__main__":
         print( "Number Of individuals in database: ",MaxIndividuals )
 
     MaxGen=MaxIndividuals/gv.MaxIndividualsInGen
-
+    
+    #Commenting the code to make a price series table
+    '''
     dbObject1.dbQuery("CREATE TABLE price_series_table"
                              "("
                              "date date,"
@@ -130,9 +132,11 @@ if __name__ == "__main__":
 
     print(query2)
     dbObject1.dbQuery(query2)
+    '''
     dbObject1.dbClose()
+    
     #Creates Walkforward List
-    [TBeginList,TendList,RBeginList,REndList]=CreateWFList("PriceSeries", gv.numDaysInTraining, gv.numDaysInReporting) #Creates Walkforward List
+    [TBeginList,TendList,RBeginList,REndList]=CreateWFList(gv.priceSeriesTable, gv.numDaysInTraining, gv.numDaysInReporting) #Creates Walkforward List
     #[TBeginList,TendList,RBeginList,REndList]=[["20120622","20120625"],["20120623","20120626"],["20120625","20120627"],["20130626","20120629"]]
 
     '''
