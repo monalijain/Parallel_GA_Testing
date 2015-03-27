@@ -2,14 +2,14 @@ __author__ = 'MJ'
 #Function which gives walkforward list, given the price series data; Number of Days in Training Data; Number of Days in Reporting Date
 import GlobalVariables as gv
 from DB_DBUtils import *
-
+import logging
 import datetime
 
 def CreateWFList(SamplePriceSeries,T,R):
     dbObject4 = DBUtils()
     dbObject4.dbConnect()
     query= "SELECT *, 1 FROM " + gv.priceSeriesTable
-    print "Executing Query",query
+    logging.info("Executing Query %s",query)
     resultDates = dbObject4.dbQuery(query)
 
     c=0
@@ -37,7 +37,7 @@ def CreateWFList(SamplePriceSeries,T,R):
         date1=date
 
     query= "SELECT *, 1 FROM " + gv.priceSeriesTable
-    print "Executing Query",query
+    logging.info("Executing Query %s",query)
     resultDates = dbObject4.dbQuery(query)
 
     Rcounter=1
