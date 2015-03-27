@@ -10,11 +10,11 @@ class DBUtils:
     databaseObject = None
 
     def dbConnect (self):
-        db_username = 'root'
-        db_password = 'mj031992'
-        db_host = '127.0.0.1'
+        db_username = gv.db_username
+        db_password = gv.db_password
+        db_host = gv.db_host
         db_name = gv.name_database
-        db_port = '3306'
+        db_port = gv.db_port
         global databaseObject
         databaseObject = DatabaseManager(db_username, db_password,db_host,db_port, db_name)
         databaseObject.Connect()
