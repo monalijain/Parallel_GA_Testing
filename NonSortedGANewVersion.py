@@ -5,6 +5,7 @@ import csv
 from datetime import datetime
 from FastNonDominatedSort import FastNonDominatedSort
 import GlobalVariables as gv
+import logging
 
 C={}
 
@@ -21,24 +22,24 @@ def NonSortedGA(walkforward_number,MaxIndividualsInGen,MaxGen,MaxIndividuals):
                           "NetPL/Trades ratio","NetPL/Drawdown ratio","total_Gain", "total_DD", "NetPL", "TotalTrades", "ProfitMakingEpochs"])
 
     Pt={}
-    print str(datetime.now()),"Current Time"
+    logging.info("Current Time %s", str(datetime.now()))
     for num in range(1,MaxIndividualsInGen+1):
         PerfM=CalculatePerformanceMeasures(num,walkforward_number,gv.stock_number)
         #print "Performance Matrix: ",PerfM
         Pt[num]=[PerfM[0][0],PerfM[0][1],PerfM[0][2],PerfM[0][3],PerfM[0][4],PerfM[0][5],PerfM[0][6]]
         #print num
 
-    print "We have Initial seed individuals"
+    logging.info("We have Initial seed individuals")
 
     for gen in range(1,min(MaxGen,MaxIndividuals/MaxIndividualsInGen)):
         StoreParetoID_EachGen=[]
-        print "This is generation ",gen-1
-        print str(datetime.now()),"Current Time of Generation: ",gen-1
-        print "Non Dominated Sorting of generation ",gen-1
+        logging.info("This is generation %s",gen-1)
+        logging.info("Current Time %s",str(datetime.now()))
+        logging.info("Non Dominated Sorting of generation %s",gen-1)
         F=FastNonDominatedSort(Pt) #Create Fronts From Population
-        print "Pareto Optimal Front of generation",gen-1,"is: ",F[1]
+        logging.info("Pareto Optimal Front of generation %s is: %s",gen-1,F[1])
         ParetoFront.writerow([gen-1])
-        print "Writing Front in pareto front file"
+        logging.info("Writing Front in pareto front file")
 
         for key in F[1].keys():
             F_Reporting=CalculatePerformanceMeasuresReporting(key,walkforward_number,gv.stock_number)
@@ -59,7 +60,7 @@ def NonSortedGA(walkforward_number,MaxIndividualsInGen,MaxGen,MaxIndividuals):
 
         lengOfFront1and2=len(F[1])
 
-        print "Making New Population"
+        logging.info("Making New Population")
         Q=MakeNewPopulation(F,Pt,i,gen,MaxIndividualsInGen,lengOfFront1and2)
         Qt={}
         counter=0
@@ -67,13 +68,13 @@ def NonSortedGA(walkforward_number,MaxIndividualsInGen,MaxGen,MaxIndividuals):
             PerfM=CalculatePerformanceMeasures(num,walkforward_number,gv.stock_number)
             Qt[num]=[PerfM[0][0],PerfM[0][1],PerfM[0][2],PerfM[0][3],PerfM[0][4],PerfM[0][5],PerfM[0][6]]
             counter =counter +1
-        print "Number of children in generation ",gen-1,"is ",counter
+        logging.info("Number of children in generation %s is %s",gen-1,counter)
         #Pt1=dict((F[1]).items()+(F[2]).items()+Qt.items())
         Pt1=dict((F[1]).items()+Qt.items())
 
-        print "Checking Convergence"
+        logging.info("Checking Convergence")
         if(CheckConvergenceOfPopulation(F,gen)==0):
-            print "Converged"
+            logging.info("Converged")
         Pt=Pt1
 
     StoreParetoID_EachGen=[]
@@ -82,7 +83,7 @@ def NonSortedGA(walkforward_number,MaxIndividualsInGen,MaxGen,MaxIndividuals):
     NetPL_CurrentGen=0.0
     TotalTrades_CurrentGen=0
 
-    print "Calculating NetPL/Total Trades of Pareto Optimal Front"
+    logging.info("Calculating NetPL/Total Trades of Pareto Optimal Front")
     for individual in F[1].keys():
         NetPL_CurrentGen=float(F[1][individual][4])+NetPL_CurrentGen
         TotalTrades_CurrentGen=float(F[1][individual][5])+TotalTrades_CurrentGen
@@ -94,15 +95,15 @@ def NonSortedGA(walkforward_number,MaxIndividualsInGen,MaxGen,MaxIndividuals):
         C[gen]=[-50000,0]
     else:
         C[gen]=[NetPL_CurrentGen/(1.0*TotalTrades_CurrentGen),TotalTrades_CurrentGen]
-    print "NetPL/TotalTrades[gen=",gen,"]:",C[gen]
+    logging.info("NetPL/TotalTrades[gen=%s] = %s",gen,C[gen])
 
-    print "Pareto Optimal Front of generation",gen,"is: ",F[1]
+    logging.info("Pareto Optimal Front of generation %s is: %s",gen,F[1])
     ParetoFront.writerow([gen])
     for key in F[1].keys():
         ParetoFront.writerow([key,F[1][key][0],F[1][key][1],F[1][key][2],F[1][key][3],F[1][key][4],F[1][key][5],F[1][key][6]])
 
     #print "Performance Measure of evolved individuals in Training Period",Pt
-    print "Returning From NonSorted GA New Version for walkforward ", walkforward_number
+    logging.info("Returning From NonSorted GA New Version for walkforward %s", walkforward_number)
     return [Pt,C,StoreParetoID]
 
 
@@ -110,7 +111,7 @@ def CheckConvergenceOfPopulation(F,gen):
     NetPL_CurrentGen=0.0
     TotalTrades_CurrentGen=0
 
-    print "Calculating NetPL/Total Trades of Pareto Optimal Front"
+    logging.info("Calculating NetPL/Total Trades of Pareto Optimal Front")
 
     for individual in F[1].keys():
         NetPL_CurrentGen=float(F[1][individual][4])+NetPL_CurrentGen
@@ -120,7 +121,7 @@ def CheckConvergenceOfPopulation(F,gen):
         C[gen-1]=[-50000,0]
     else:
         C[gen-1]=[NetPL_CurrentGen/(1.0*TotalTrades_CurrentGen),TotalTrades_CurrentGen]
-    print "NetPL/TotalTrades[gen=",gen-1,"]:",C[gen-1]
+    logging.info("NetPL/TotalTrades[gen=%s] is: %s",gen-1,C[gen-1])
 
     if(gen==1):
         return 1
@@ -136,7 +137,7 @@ def CheckConvergenceOfPopulation(F,gen):
             if(ParetoOptimalFront[i]<=gv.ConvergenceValue):
                 done+=1
     if(done==gv.CheckGen):
-        print("Converged algorithm in generation",gen)
+        logging.info("Converged algorithm in generation %s",gen)
         return 0
 
     return 1
