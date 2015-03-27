@@ -113,7 +113,7 @@ if __name__ == "__main__":
 
     for num1,num2 in Number:
         MaxIndividuals=num1
-        logging.info( "Number Of individuals in database: %s",MaxIndividuals)
+    logging.info( "Number Of individuals in database: %s",MaxIndividuals)
 
     MaxGen=MaxIndividuals/gv.MaxIndividualsInGen
     
@@ -158,7 +158,7 @@ if __name__ == "__main__":
         threadList.append("Thread" + str(threadNum))
         threadNum += 1
 	
-	logging.info("threadList %s",threadList)
+    logging.info("threadList %s",threadList)
     print threadList,"threadList"
     queueLock = threading.Lock()
     print queueLock,"queueLock"
