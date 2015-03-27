@@ -13,6 +13,10 @@ cost_of_trading=0.0 #Cost of trading
 numDaysInTraining=20 #Number of days in training period
 numDaysInReporting=10 # Number of days in testing period
 name_database='raw' # Name of the database where, PriceSeries.csv and name_Tradesheet_table is stored
+db_username = 'root'
+db_password = 'mj031992'
+db_host = '127.0.0.1'
+db_port = '3306'
 
 #The columns in tradsheet table are:
 #TradeID, IndividualID, TradeType, EntryDate, EntryTime, EntryPrice, EntryQty, ExitDate, ExitTime, ExitPrice
