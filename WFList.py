@@ -79,6 +79,8 @@ def CreateWFList(SamplePriceSeries,T,R):
         ReportingBegin.pop()
 
     #return (['20120622','20120628'],['20120625','20120629'],['20120626','20120702'],['20120627','20120703'])
+    dbObject4.dbClose()
+    
     return (TrainingBegin,TrainingEnd,ReportingBegin,ReportingEnd)
 
 #[a,b,c,d]=CreateWFList("PriceSeries", 20, 10)
