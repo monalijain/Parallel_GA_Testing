@@ -57,8 +57,9 @@ def Make_Performance_Measures(Begin,End,Train_Or_Report,walkforward_number):
     Gain_History = []        #List to store the MaxGain values
 
     string_1= "performance_measures_"+Train_Or_Report+"_walk" + str(walkforward_number)+ "_" + "stock"+ str(gv.stock_number)
-
+    IndividualIDExist=0
     for trade_id, individual_id, trade_type, trade_entry_date, trade_entry_time, trade_entry_price, trade_qty, trade_exit_date, trade_exit_time, trade_exit_price, k in resultIndividuals:
+        IndividualIDExist=1
         CurrentDate=datetime.datetime.strptime(str(trade_entry_date),"%Y-%m-%d")
         #print CurrentDate, individual_id
 # CurrentDate=datetime.datetime.strptime(str(trade_entry_date),"%Y-%m-%d")
@@ -236,14 +237,13 @@ def Make_Performance_Measures(Begin,End,Train_Or_Report,walkforward_number):
         Performance_Measures.append((NetPL/(TotalTrades), NetPL/(-total_DD), total_Gain, total_DD, NetPL, TotalTrades, ProfitMakingEpochs))
 
     #print individual_id,Performance_Measures
+    if(IndividualIDExist!=0):
+        dbObject1.dbQuery("INSERT INTO "+ string_1+""
+                                           " (individual_id, netpl_trades, netpl_drawdown, total_drawup, total_drawdown, netpl, total_trades, profit_epochs)"
+                                           " VALUES"
+                                           " ('" + str(individual_id) + "', '" + str(Performance_Measures[0][0]) + "', '" + str(Performance_Measures[0][1]) + "', '" + str(Performance_Measures[0][2]) + "', '" + str(Performance_Measures[0][3]) + "', '" + str(Performance_Measures[0][4]) + "', '" + str(Performance_Measures[0][5]) + "', " + str(Performance_Measures[0][6]) + ")" )
 
-    dbObject1.dbQuery("INSERT INTO "+ string_1+""
-                                       " (individual_id, netpl_trades, netpl_drawdown, total_drawup, total_drawdown, netpl, total_trades, profit_epochs)"
-                                       " VALUES"
-                                       " ('" + str(individual_id) + "', '" + str(Performance_Measures[0][0]) + "', '" + str(Performance_Measures[0][1]) + "', '" + str(Performance_Measures[0][2]) + "', '" + str(Performance_Measures[0][3]) + "', '" + str(Performance_Measures[0][4]) + "', '" + str(Performance_Measures[0][5]) + "', " + str(Performance_Measures[0][6]) + ")" )
-
-
-
+    
     logging.info("End of Calculation of Performance Measures")
     dbObject1.dbClose()
 
